@@ -3,6 +3,8 @@
  * (same value also in room.json → "url"). No HTML change needed.
  */
 window.RC_CONFIG = {
+  /* Room name shown above the now-playing title */
+  ROOM_NAME: "نبرد اندیشه ها",
   /* Ordered fallbacks. Prefer low-bitrate public HTTPS MP3 when available. */
   STREAMS: [
     { url: "", type: "mp3", label: "MP3 اصلی" },          /* PLACEHOLDER: fixed public HTTPS MP3 */

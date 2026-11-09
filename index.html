@@ -131,7 +131,7 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
 <div class="grid">
   <section class="card now full" aria-live="polite">
     <div class="eq">🎵</div>
-    <div><div class="l">الان پخش می‌شود</div><div class="t" id="nowTitle">Radio Clubhouse</div></div>
+    <div><div class="l" id="roomName">نبرد اندیشه ها</div><div class="t" id="nowTitle">Radio Clubhouse</div></div>
   </section>
 
   <section class="clocks full" aria-label="ساعت شهرها">
@@ -189,7 +189,7 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
 <footer>Radio Clubhouse · radioclubhouse.com</footer>
 </div>
 
-<script src="config.js"></script>
+<script src="config.js?v=4"></script>
 <script>
 (function(){
 "use strict";
@@ -198,6 +198,7 @@ function $(id){return document.getElementById(id)}
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=String(txt);return e}
 function getJSON(url){return fetch(url,{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()})}
 function safeUrl(u){try{var x=new URL(u,location.href);return(x.protocol==="https:"||x.protocol==="http:")?x.href:null}catch(e){return null}}
+if(window.RC_CONFIG&&RC_CONFIG.ROOM_NAME){var rn=document.getElementById("roomName");if(rn)rn.textContent=RC_CONFIG.ROOM_NAME}
 function clean(s,n){return String(s==null?"":s).replace(/[\u0000-\u001f\u007f]/g," ").slice(0,n||300)}
 
 /* clocks: local Intl, Latin digits */
