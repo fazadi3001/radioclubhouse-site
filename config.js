@@ -19,7 +19,7 @@ window.RC_CONFIG = {
      stage  <- LIVE_BASE/meta.json   {title, stage:[{name,mod,speaking}]}
      chat   <- LIVE_BASE/chat?since=N {ok,last,m:[{id,n,t}]} */
   LIVE_BASE: "https://clubhouse-mini.tail4a3417.ts.net",
-  ROOM_LIVE_POLL_SEC: 10,
+  ROOM_LIVE_POLL_SEC: 4,
   /* Listener chat → room. EMPTY = message box hidden (no server; code dormant). */
   CHAT_POST_URL: "",
   CHAT_MAX_LEN: 200,
