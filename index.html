@@ -141,9 +141,9 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
   </section>
 
   <section class="clocks full" aria-label="ساعت شهرها">
-    <div class="clock c1"><div class="city">تهران</div><div class="time" data-tz="Asia/Tehran">--:--:--</div></div>
-    <div class="clock c2"><div class="city">لندن</div><div class="time" data-tz="Europe/London">--:--:--</div></div>
-    <div class="clock c3"><div class="city">نیویورک</div><div class="time" data-tz="America/New_York">--:--:--</div></div>
+    <div class="clock c1"><div class="city">تهران</div><div class="time" data-tz="Asia/Tehran">--:--</div></div>
+    <div class="clock c2"><div class="city">لندن</div><div class="time" data-tz="Europe/London">--:--</div></div>
+    <div class="clock c3"><div class="city">نیویورک</div><div class="time" data-tz="America/New_York">--:--</div></div>
   </section>
 
   <section class="card room full" id="room" aria-label="اتاق زنده">
@@ -214,10 +214,10 @@ function safeUrl(u){try{var x=new URL(u,location.href);return(x.protocol==="http
 if(window.RC_CONFIG&&RC_CONFIG.ROOM_NAME){var rn=document.getElementById("roomName");if(rn)rn.textContent=RC_CONFIG.ROOM_NAME}
 function clean(s,n){return String(s==null?"":s).replace(/[\u0000-\u001f\u007f]/g," ").slice(0,n||300)}
 
-/* clocks: local Intl, Latin digits */
+/* clocks: local Intl, Latin digits, no seconds */
 var clk=document.querySelectorAll(".clock .time"),fmts={};
 function tick(){var d=new Date();for(var i=0;i<clk.length;i++){var tz=clk[i].getAttribute("data-tz");
- try{fmts[tz]=fmts[tz]||new Intl.DateTimeFormat("en-GB",{timeZone:tz,hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});clk[i].textContent=fmts[tz].format(d)}catch(e){}}}
+ try{fmts[tz]=fmts[tz]||new Intl.DateTimeFormat("en-GB",{timeZone:tz,hour:"2-digit",minute:"2-digit",hour12:false});clk[i].textContent=fmts[tz].format(d)}catch(e){}}}
 tick();setInterval(tick,1000);
 
 /* room link */
