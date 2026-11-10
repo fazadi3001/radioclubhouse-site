@@ -173,7 +173,7 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
 <body>
 <div class="w">
 <header class="hero" id="hero">
-  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v5">
+  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v6">
     <div class="lr-h"><i></i> اتاق‌های زنده</div>
     <div class="lr-row" id="lrRow" role="list"></div>
     <div class="lrnow" id="lrNow" hidden aria-live="polite"></div>
@@ -455,7 +455,7 @@ function playRoom(id){var r=rooms[id];if(!r)return;
  if(nativeHls){ra.src=url;ra.play().then(function(){ok();toEdge(3)}).catch(fail);return}
  loadHls(function(){if(cur!==id)return;
   if(!(window.Hls&&Hls.isSupported())){fail();return}
-  hls=new Hls({lowLatencyMode:true,liveSyncDurationCount:2,liveMaxLatencyDurationCount:4,maxLiveSyncPlaybackRate:1.15,maxBufferLength:8,backBufferLength:10});
+  hls=new Hls({lowLatencyMode:true,liveSyncDurationCount:2,liveMaxLatencyDurationCount:4,maxLiveSyncPlaybackRate:1,maxBufferLength:8,backBufferLength:10});
   hls.loadSource(url);hls.attachMedia(ra);
   hls.on(Hls.Events.MANIFEST_PARSED,function(){ra.play().then(ok).catch(fail)});
   hls.on(Hls.Events.ERROR,function(_,d){if(d&&d.fatal)fail()})})}
