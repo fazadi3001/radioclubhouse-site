@@ -10,6 +10,14 @@
 <meta property="og:description" content="Live Persian Clubhouse radio.">
 <meta property="og:image" content="assets/logo.jpg">
 <link rel="icon" href="assets/favicon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="رادیو کلاب‌هاوس">
 <style>
 :root{--bg:#0a0716;--card:#151129;--card2:#1c1736;--line:#2c2550;--text:#f1eefc;--muted:#a49cc4;
 --pink:#ff3d8b;--violet:#8b5cf6;--cyan:#22d3ee;--gold:#fbbf24;--green:#34d399;--red:#f87171}
@@ -113,6 +121,16 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
 [hidden]{display:none!important}
 .modstar{position:absolute;bottom:-3px;left:-3px;width:20px;height:20px;border-radius:50%;background:#16a34a;color:#fff;font-size:13px;line-height:20px;text-align:center;border:2px solid #0f0a1f;font-family:Arial,sans-serif}
 .av{position:relative}
+
+/* PWA install hint — small, below the links */
+.install-hint{margin-top:10px;display:none;align-items:center;justify-content:space-between;gap:8px;
+  padding:8px 12px;border-radius:12px;background:var(--card2);border:1px solid var(--line);color:var(--muted);font-size:.8rem;line-height:1.5}
+.install-hint.show{display:flex}
+.install-hint p{margin:0;flex:1}.install-hint .inst-ios [dir=ltr]{unicode-bidi:isolate;white-space:nowrap}
+.install-hint .inst-btn{flex:1;border:0;cursor:pointer;font:inherit;font-weight:700;font-size:.85rem;color:var(--text);
+  background:linear-gradient(135deg,rgba(139,92,246,.35),rgba(255,61,139,.25));border-radius:10px;padding:8px 12px}
+.install-hint .inst-x{flex:0 0 auto;background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:1.15rem;line-height:1;padding:2px 6px}
+@media (display-mode:standalone){.install-hint{display:none!important}}
 </style>
 </head>
 <body>
@@ -177,6 +195,11 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
       <a class="ch-btn player-btn" id="playerBtn" target="_blank" rel="noopener" href="https://clubhouse-mini.tail4a3417.ts.net/listen"><span>📻</span><span>رادیو پلیر</span></a>
       <a class="ch-btn tg-btn" id="telegramInviteBtn" target="_blank" rel="noopener" href="https://t.me/+3FEvq33blVgwYWE1"><span>✉️</span><span>تلگرام نبرد اندیشه ها</span></a>
     </div>
+    </div>
+    <div class="install-hint" id="installHint" hidden>
+      <button type="button" class="inst-btn" id="installBtn" hidden>📲 نصب اپ رادیو</button>
+      <p class="inst-ios" id="installIos" hidden>برای نصب: دکمه‌ی <span dir="ltr">Share</span> و بعد <span dir="ltr">Add to Home Screen</span></p>
+      <button type="button" class="inst-x" id="installDismiss" aria-label="بستن">×</button>
     </div>
     <div class="upd" id="upd"></div>
   </section>
@@ -335,6 +358,48 @@ getJSON(cfg.ARCHIVE_URL||"archive.json").then(function(j){var ul=$("arch"),items
  items.slice(0,100).forEach(function(it){var u=it&&it.url&&safeUrl(it.url);if(!u)return;var a=el("a");a.href=u;a.target="_blank";a.rel="noopener nofollow";
   a.appendChild(el("span",null,clean(it.title,120)||"ضبط اتاق"));a.appendChild(el("span","d",clean(it.date,20)));var li=el("li");li.appendChild(a);ul.appendChild(li)});
  $("archEmpty").style.display=ul.children.length?"none":"block"}).catch(function(){});
+})();
+</script>
+<script>
+(function(){
+"use strict";
+if("serviceWorker" in navigator){
+  window.addEventListener("load",function(){
+    navigator.serviceWorker.register("/sw.js").catch(function(){});
+  });
+}
+var hint=document.getElementById("installHint");
+if(!hint)return;
+var standalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||!!window.navigator.standalone;
+if(standalone){hint.hidden=true;return}
+function showHint(){hint.hidden=false;hint.classList.add("show")}
+function hideHint(){hint.hidden=true;hint.classList.remove("show")}
+var iosHint=document.getElementById("installIos");
+var instBtn=document.getElementById("installBtn");
+var ua=navigator.userAgent||"";
+var isIOS=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+var dismissed=false;
+try{dismissed=localStorage.getItem("rc_ios_install_dismissed")==="1"}catch(e){}
+if(isIOS&&!dismissed&&iosHint){iosHint.hidden=false;showHint()}
+var deferred=null;
+window.addEventListener("beforeinstallprompt",function(e){
+  e.preventDefault();
+  deferred=e;
+  if(iosHint)iosHint.hidden=true;
+  if(instBtn)instBtn.hidden=false;
+  showHint();
+});
+if(instBtn)instBtn.addEventListener("click",function(){
+  if(!deferred)return;
+  deferred.prompt();
+  deferred.userChoice.then(function(){deferred=null;hideHint()}).catch(function(){});
+});
+var x=document.getElementById("installDismiss");
+if(x)x.addEventListener("click",function(){
+  hideHint();
+  if(isIOS){try{localStorage.setItem("rc_ios_install_dismissed","1")}catch(e){}}
+});
+window.addEventListener("appinstalled",function(){hideHint();deferred=null});
 })();
 </script>
 </body>
