@@ -132,13 +132,13 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
   background:linear-gradient(135deg,rgba(139,92,246,.35),rgba(255,61,139,.25));border-radius:10px;padding:8px 12px}
 .install-hint .inst-x{flex:0 0 auto;background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:1.15rem;line-height:1;padding:2px 6px}
 @media (display-mode:standalone){.install-hint{display:none!important}}
-/* live rooms strip (secondary, top) */
+/* live rooms strip (secondary, top) — original circle size, 3+2 wrap so 5 fit on a phone */
 .lr{margin:-8px -8px 14px;padding:0 4px}
 .lr-h{display:flex;align-items:center;gap:6px;font-size:.72rem;color:#fecaca;margin:0 6px 6px}
 .lr-h i{width:7px;height:7px;border-radius:50%;background:var(--red);animation:blink 1.4s infinite}
-.lr-row{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;padding:12px 8px 4px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.lr-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:292px;margin:0 auto;overflow-x:auto;overflow-y:visible;padding:12px 8px 8px;scroll-snap-type:none;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .lr-row::-webkit-scrollbar{display:none}
-.lrb{flex:0 0 78px;width:78px;scroll-snap-align:start;background:none;border:0;padding:0;margin:0;color:var(--text);font:inherit;cursor:pointer;text-align:center;
+.lrb{flex:0 0 78px;width:78px;scroll-snap-align:unset;background:none;border:0;padding:0;margin:0;color:var(--text);font:inherit;cursor:pointer;text-align:center;
  animation:lrIn .42s cubic-bezier(.2,1.5,.4,1) both;-webkit-tap-highlight-color:transparent}
 .lrb.out{animation:lrOut .32s ease-in forwards;pointer-events:none}
 @keyframes lrIn{0%{transform:scale(0);opacity:0}70%{transform:scale(1.1);opacity:1}100%{transform:scale(1)}}
@@ -167,13 +167,13 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
 .lrnow{margin:6px 6px 0;padding:8px 10px;border-radius:12px;background:rgba(0,0,0,.28);border:1px solid rgba(52,211,153,.3);font-size:.78rem;line-height:1.5}
 .lrnow b{color:var(--green)}.lrnow .sp{display:block;color:#d6ccff;font-size:.72rem;margin-top:2px;word-break:break-word}
 .lrnow .rowx{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-@media (min-width:700px){.lr-row{justify-content:center}.lrb{flex-basis:92px;width:92px}.lrc{width:64px;height:64px}}
+@media (min-width:700px){.lr-row{max-width:none;justify-content:center}.lrb{flex-basis:92px;width:92px}.lrc{width:64px;height:64px}.lrb.play,.lrb.load{flex-basis:110px;width:110px}.lrb.play .lrc,.lrb.load .lrc{width:80px;height:80px;font-size:1.6rem}}
 </style>
 </head>
 <body>
 <div class="w">
 <header class="hero" id="hero">
-  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v6">
+  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v7">
     <div class="lr-h"><i></i> اتاق‌های زنده</div>
     <div class="lr-row" id="lrRow" role="list"></div>
     <div class="lrnow" id="lrNow" hidden aria-live="polite"></div>

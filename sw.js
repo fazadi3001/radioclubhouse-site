@@ -3,7 +3,7 @@
  * HLS segments, or the live stage/chat API — those go straight to the network
  * so playback and low-latency stay untouched.
  */
-var CACHE = "rc-shell-v4";
+var CACHE = "rc-shell-v5";
 var PRECACHE = [
   "/",
   "/index.html",
