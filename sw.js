@@ -1,9 +1,9 @@
 /* Radio Clubhouse PWA service worker.
  * Caches only the static site shell. Never intercepts the live stream,
- * HLS segments, or the live stage/chat API — those go straight to the network
+ * HLS segments, the live stage/chat API, or the anonymous /rooms/hb ping — those go straight to the network
  * so playback and low-latency stay untouched.
  */
-var CACHE = "rc-shell-v5";
+var CACHE = "rc-shell-v6";
 var PRECACHE = [
   "/",
   "/index.html",
@@ -36,6 +36,7 @@ function shouldBypass(url, request) {
   if (host.endsWith(".ts.net")) return true;
   if (/\.(m3u8|ts|m4s|aac|mp3|m4a)(\?|$)/i.test(url.pathname)) return true;
   if (path.indexOf(".m3u8") !== -1 || path.indexOf("/hls/") !== -1 || path.indexOf("/rooms/") !== -1) return true;
+  if (path === "/hb" || path.indexOf("/hb") !== -1) return true;
   if (/\/(meta\.json|chat)\b/.test(path)) return true;
   if (href.indexOf("clubhouse-mini.tail4a3417.ts.net") !== -1) return true;
   var dest = request.destination;

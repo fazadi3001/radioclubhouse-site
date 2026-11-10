@@ -173,7 +173,7 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
 <body>
 <div class="w">
 <header class="hero" id="hero">
-  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v7">
+  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v8">
     <div class="lr-h"><i></i> اتاق‌های زنده</div>
     <div class="lr-row" id="lrRow" role="list"></div>
     <div class="lrnow" id="lrNow" hidden aria-live="polite"></div>
@@ -525,6 +525,55 @@ if(x)x.addEventListener("click",function(){
   if(isIOS){try{localStorage.setItem("rc_ios_install_dismissed","1")}catch(e){}}
 });
 window.addEventListener("appinstalled",function(){hideHint();deferred=null});
+})();
+</script>
+<script>
+/* Anonymous presence ping for the private admin counter only. Never shown on this page.
+   Fails silently; must not affect playback. */
+(function(){
+try{
+var cfg=window.RC_CONFIG||{};
+var BASE=(cfg.ROOMS_BASE||cfg.LIVE_BASE||"").replace(/\/$/,"");
+if(!BASE)return;
+var URL=BASE+"/rooms/hb";
+var sid=null;
+try{sid=sessionStorage.getItem("rc_sid")}catch(e){}
+if(!sid||!/^[A-Za-z0-9_-]{8,64}$/.test(sid)){
+  var bytes=(window.crypto&&crypto.getRandomValues)?crypto.getRandomValues(new Uint8Array(16)):null;
+  if(bytes)sid=Array.from(bytes).map(function(b){return b.toString(16).padStart(2,"0")}).join("");
+  else sid="t"+String(Date.now())+String(Math.random()).slice(2,10);
+  try{sessionStorage.setItem("rc_sid",sid)}catch(e){}
+}
+function playing(){
+  try{
+    var ra=document.getElementById("roomAudio");
+    if(ra&&!ra.paused&&(ra.currentSrc||ra.src)){
+      var m=String(ra.currentSrc||ra.src).match(/\/rooms\/([A-Za-z0-9_-]{3,40})\//);
+      if(m)return m[1];
+    }
+    var a=document.getElementById("audio");
+    var hero=document.getElementById("hero");
+    if((a&&!a.paused&&(a.currentSrc||a.src))||(hero&&hero.classList.contains("on")))return "main";
+  }catch(e){}
+  return "";
+}
+function send(){
+  try{
+    var u=URL+"?s="+encodeURIComponent(sid)+"&p="+encodeURIComponent(playing());
+    var ok=false;
+    if(navigator.sendBeacon){
+      try{ok=!!navigator.sendBeacon(u,new Blob([],{type:"text/plain"}))}catch(e){ok=false}
+    }
+    if(!ok&&typeof fetch==="function"){
+      fetch(u,{method:"POST",mode:"no-cors",keepalive:true,credentials:"omit"}).catch(function(){});
+    }
+  }catch(e){}
+}
+send();
+setInterval(send,30000);
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")send()});
+window.addEventListener("pagehide",send);
+}catch(e){}
 })();
 </script>
 </body>
