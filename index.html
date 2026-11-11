@@ -47,13 +47,12 @@ background:linear-gradient(145deg,var(--pink),var(--violet));box-shadow:0 12px 3
 @keyframes pulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.55);opacity:0}}
 .wave{display:flex;gap:4px;align-items:center;height:56px}
 .wave span{width:6px;height:12px;border-radius:4px;background:linear-gradient(var(--cyan),var(--violet));opacity:.45;transition:opacity .3s}
-.on .wave span{opacity:1;animation:wv 1s ease-in-out infinite}
+.wave span{transition:height .12s linear,opacity .3s}.on .wave span{opacity:1}
 .wave span:nth-child(2){animation-delay:-.8s!important}.wave span:nth-child(3){animation-delay:-.6s!important}
 .wave span:nth-child(4){animation-delay:-.4s!important}.wave span:nth-child(5){animation-delay:-.2s!important}
 .wave span:nth-child(6){animation-delay:-.7s!important}.wave span:nth-child(7){animation-delay:-.3s!important}
 @keyframes wv{0%,100%{height:10px}50%{height:52px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
-@media (prefers-reduced-motion:reduce){.on .wave span{animation:wv 1.4s ease-in-out infinite!important}}
 .st{text-align:center;margin-top:12px;color:#d6ccff;font-size:.8rem;min-height:1.3em}
 .st.warn{color:var(--gold)}.st.err{color:var(--red)}
 audio{display:none}
@@ -174,7 +173,7 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
 <body>
 <div class="w">
 <header class="hero" id="hero">
-  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v11">
+  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v12">
     <div class="lr-h"><i></i> اتاق‌های زنده</div>
     <div class="lr-row" id="lrRow" role="list"></div>
     <div class="lrnow" id="lrNow" hidden aria-live="polite"></div>
@@ -269,7 +268,7 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
 <footer>Radio Clubhouse · radioclubhouse.com</footer>
 </div>
 
-<script src="config.js?v=20"></script>
+<script src="config.js?v=21"></script>
 <script>
 (function(){
 "use strict";
@@ -323,6 +322,8 @@ setInterval(function(){if(playing&&!audio.paused)toEdge(8)},10000);
 $("playBtn").addEventListener("click",function(){if(playing){userStop=true;audio.pause();setOn(false);setSt("متوقف شد");return}userStop=false;tryIdx(0)});
 audio.addEventListener("pause",function(){if(userStop||edgeSeek)return;if(playing){audio.play().catch(function(){setOn(false);setSt("متوقف شد")})}});
 audio.addEventListener("play",function(){if(!userStop)setOn(true)});
+/* JS-driven equalizer bars (works on iPhone even with Reduce Motion) */
+(function(){var W=document.querySelectorAll(".wave span"),ph=[0,1.7,3.1,.6,2.4,4,1.2],t0=Date.now(),was=false;setInterval(function(){if(!playing||audio.paused){if(was){for(var i=0;i<W.length;i++)W[i].style.height="";was=false}return}was=true;var t=(Date.now()-t0)/1000;for(var i=0;i<W.length;i++){var v=Math.abs(Math.sin(t*(2.6+i*.37)+ph[i]))*.7+Math.abs(Math.sin(t*1.3+i))*.3;W[i].style.height=Math.round(10+v*42)+"px"}},110)})();
 window.rcStopMain=function(){userStop=true;try{audio.pause()}catch(e){}setOn(false);setSt("")};
 
 
