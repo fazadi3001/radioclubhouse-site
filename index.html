@@ -173,7 +173,7 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
 <body>
 <div class="w">
 <header class="hero" id="hero">
-  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v8">
+  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v9">
     <div class="lr-h"><i></i> اتاق‌های زنده</div>
     <div class="lr-row" id="lrRow" role="list"></div>
     <div class="lrnow" id="lrNow" hidden aria-live="polite"></div>
@@ -268,7 +268,7 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
 <footer>Radio Clubhouse · radioclubhouse.com</footer>
 </div>
 
-<script src="config.js?v=5"></script>
+<script src="config.js?v=18"></script>
 <script>
 (function(){
 "use strict";
@@ -296,29 +296,32 @@ if(cfg.TELEGRAM_URL&&safeUrl(cfg.TELEGRAM_URL)){var a=el("a",null,cfg.TELEGRAM_U
 /* player */
 var audio=$("audio"),hero=$("hero"),st=$("status"),playing=false,hls=null,loadingHls=false;
 function setSt(m,k){st.textContent=m||"";st.className="st"+(k?" "+k:"")}
-function setOn(on){playing=on;hero.classList.toggle("on",on);$("pIc").textContent=on?"❚❚":"▶";$("pTx").textContent=on?"توقف":"نبرد اندیشه ها"}
+function setOn(on){playing=on;hero.classList.toggle("on",on);$("pIc").textContent=on?"❚❚":"▶";$("pTx").textContent="نبرد اندیشه ها"}
 function streams(){return(cfg.STREAMS||[]).filter(function(s){return s&&s.url})}
 function ok(s){setOn(true);setSt("در حال پخش «نبرد اندیشه ها»")}
-function tryIdx(i){var L=streams();
+function tryIdx(i,tryN){tryN=tryN||0;var L=streams();function failSame(){if(tryN<2)tryIdx(i,tryN+1);else tryIdx(i+1)}
  if(!L.length){setSt("لینک پخش عمومی هنوز تنظیم نشده — از اتاق کلاب‌هاوس گوش کن","warn");return}
  if(i>=L.length){setOn(false);setSt("پخش در دسترس نیست؛ اینترنت یا VPN را چک کن","err");return}
  var s=L[i];setSt("در حال اتصال…");if(hls){try{hls.destroy()}catch(e){}hls=null}
- if(s.type==="mp3"){audio.onerror=function(){tryIdx(i+1)};audio.src=s.url;audio.play().then(function(){ok(s)}).catch(function(){tryIdx(i+1)});return}
+ if(s.type==="mp3"){audio.onerror=function(){failSame()};audio.src=s.url;audio.play().then(function(){ok(s)}).catch(failSame);return}
  function start(){
-  if(audio.canPlayType("application/vnd.apple.mpegurl")){audio.src=s.url;audio.play().then(function(){ok(s);toEdge(3)}).catch(function(){tryIdx(i+1)})}
-  else if(window.Hls&&Hls.isSupported()){hls=new Hls({lowLatencyMode:true,liveSyncDurationCount:2,liveMaxLatencyDurationCount:4,maxLiveSyncPlaybackRate:1.15,maxBufferLength:8,backBufferLength:10});hls.loadSource(s.url);hls.attachMedia(audio);
-   hls.on(Hls.Events.MANIFEST_PARSED,function(){audio.play().then(function(){ok(s)}).catch(function(){tryIdx(i+1)})});
-   hls.on(Hls.Events.ERROR,function(_,d){if(d&&d.fatal)tryIdx(i+1)})}
+  if(audio.canPlayType("application/vnd.apple.mpegurl")){audio.src=s.url;audio.play().then(function(){ok(s);toEdge(3)}).catch(failSame)}
+  else if(window.Hls&&Hls.isSupported()){hls=new Hls({lowLatencyMode:false,liveSyncDurationCount:2,liveMaxLatencyDurationCount:4,maxLiveSyncPlaybackRate:1.15,maxBufferLength:20,backBufferLength:10});hls.loadSource(s.url);hls.attachMedia(audio);
+   hls.on(Hls.Events.MANIFEST_PARSED,function(){audio.play().then(function(){ok(s)}).catch(failSame)});
+   hls.on(Hls.Events.ERROR,function(_,d){if(d&&d.fatal)failSame()})}
   else tryIdx(i+1)}
  if(window.Hls||audio.canPlayType("application/vnd.apple.mpegurl")){start();return}
  if(loadingHls)return;loadingHls=true;var sc=document.createElement("script");sc.src="vendor/hls.min.js";
  sc.onload=function(){loadingHls=false;start()};sc.onerror=function(){loadingHls=false;tryIdx(i+1)};document.head.appendChild(sc)}
 /* keep native HLS (iPhone/Safari) close to live edge */
-function toEdge(max){try{if(hls)return;var r=audio.seekable;if(r&&r.length){var e=r.end(r.length-1);if(e-audio.currentTime>max)audio.currentTime=Math.max(0,e-2.5)}}catch(x){}}
+var userStop=false,edgeSeek=false;
+function toEdge(max){try{if(hls)return;var r=audio.seekable;if(r&&r.length){var e=r.end(r.length-1);if(e-audio.currentTime>max){edgeSeek=true;audio.currentTime=Math.max(0,e-2.5)}}}catch(x){edgeSeek=false}}
 audio.addEventListener("loadedmetadata",function(){toEdge(3)});
+audio.addEventListener("seeked",function(){if(!edgeSeek)return;edgeSeek=false;if(playing&&!userStop&&audio.paused)audio.play().catch(function(){})});
 setInterval(function(){if(playing&&!audio.paused)toEdge(8)},10000);
-$("playBtn").addEventListener("click",function(){if(playing){audio.pause();setOn(false);setSt("متوقف شد");return}tryIdx(0)});
-audio.addEventListener("pause",function(){if(playing){setOn(false);setSt("«نبرد اندیشه ها» متوقف شد")}});
+$("playBtn").addEventListener("click",function(){if(playing){userStop=true;audio.pause();setOn(false);setSt("متوقف شد");return}userStop=false;tryIdx(0)});
+audio.addEventListener("pause",function(){if(userStop||edgeSeek)return;if(playing){audio.play().catch(function(){setOn(false);setSt("متوقف شد")})}});
+audio.addEventListener("play",function(){if(!userStop)setOn(true)});
 
 
 /* live room */
@@ -429,10 +432,11 @@ function drawNow(){now.textContent="";var r=cur&&rooms[cur];
  now.hidden=false}
 function mark(){for(var id in rooms){var b=rooms[id].btn;b.classList.toggle("play",id===cur&&rooms[id].state==="");b.classList.toggle("load",id===cur&&rooms[id].state!=="");
  b.querySelector(".lri").textContent=id===cur?(rooms[id].state===""?"❚❚":"…"):"▶";b.setAttribute("aria-pressed",id===cur?"true":"false")}drawNow()}
-function stopRoom(msg){vizOff();if(hls){try{hls.destroy()}catch(e){}hls=null}try{ra.pause();ra.removeAttribute("src");ra.load()}catch(e){}
- var was=cur;cur=null;showBack=was&&msg?msg:false;mark()}
+var stopping=false,roomSeek=false,roomTries=0;
+function stopRoom(msg){stopping=true;vizOff();if(hls){try{hls.destroy()}catch(e){}hls=null}try{ra.pause();ra.removeAttribute("src");ra.load()}catch(e){}
+ var was=cur;cur=null;showBack=was&&msg?msg:false;mark();setTimeout(function(){stopping=false},0)}
 function loadHls(cb){if(window.Hls)return cb();var sc=document.createElement("script");sc.src="vendor/hls.min.js";sc.onload=cb;sc.onerror=cb;document.head.appendChild(sc)}
-function toEdge(max){try{if(hls)return;var r=ra.seekable;if(r&&r.length){var e=r.end(r.length-1);if(e-ra.currentTime>max)ra.currentTime=Math.max(0,e-2.5)}}catch(x){}}
+function toEdge(max){try{if(hls)return;var r=ra.seekable;if(r&&r.length){var e=r.end(r.length-1);if(e-ra.currentTime>max){roomSeek=true;ra.currentTime=Math.max(0,e-2.5)}}}catch(x){roomSeek=false}}
 /* audio-reactive green ring: Web Audio analyser on the room audio (hls.js/MSE path only;
    native-HLS on iPhone gets a gentle CSS pulse instead, because routing it through Web Audio can mute it) */
 var AC=null,AN=null,BUF=null,vizBtn=null,vizRaf=0,lvl=0;
@@ -447,21 +451,26 @@ var nativeHls=!!ra.canPlayType("application/vnd.apple.mpegurl")&&!window.MediaSo
 function playRoom(id){var r=rooms[id];if(!r)return;
  if(!nativeHls&&cur!==id){vizSetup();if(AC&&AC.state==="suspended"){try{AC.resume()}catch(e){}}}
  if(cur===id){stopRoom();return}
- stopRoom();showBack=false;cur=id;r.state="در حال اتصال…";mark();
+ stopRoom();showBack=false;stopping=false;cur=id;roomTries=0;r.state="در حال اتصال…";mark();
  if(main&&!main.paused){try{main.pause()}catch(e){}}
  var url=BASE+r.d.url;
  function fail(){if(cur!==id)return;stopRoom("پخش این اتاق الان در دسترس نیست");}
  function ok(){if(cur!==id)return;r.state="";mark();if(hls)vizOn(r.btn)}
- if(nativeHls){ra.src=url;ra.play().then(function(){ok();toEdge(3)}).catch(fail);return}
- loadHls(function(){if(cur!==id)return;
-  if(!(window.Hls&&Hls.isSupported())){fail();return}
-  hls=new Hls({lowLatencyMode:true,liveSyncDurationCount:2,liveMaxLatencyDurationCount:4,maxLiveSyncPlaybackRate:1,maxBufferLength:8,backBufferLength:10});
-  hls.loadSource(url);hls.attachMedia(ra);
-  hls.on(Hls.Events.MANIFEST_PARSED,function(){ra.play().then(ok).catch(fail)});
-  hls.on(Hls.Events.ERROR,function(_,d){if(d&&d.fatal)fail()})})}
+ function failSame(){if(cur!==id)return;if(roomTries<2){roomTries++;if(hls){try{hls.destroy()}catch(e){}hls=null}startRoom()}else fail()}
+ function startRoom(){
+  if(nativeHls){ra.src=url;ra.play().then(function(){ok();toEdge(3)}).catch(failSame);return}
+  loadHls(function(){if(cur!==id)return;
+   if(!(window.Hls&&Hls.isSupported())){fail();return}
+   hls=new Hls({lowLatencyMode:false,liveSyncDurationCount:2,liveMaxLatencyDurationCount:4,maxLiveSyncPlaybackRate:1,maxBufferLength:20,backBufferLength:10});
+   hls.loadSource(url);hls.attachMedia(ra);
+   hls.on(Hls.Events.MANIFEST_PARSED,function(){ra.play().then(ok).catch(failSame)});
+   hls.on(Hls.Events.ERROR,function(_,d){if(d&&d.fatal)failSame()})})}
+ startRoom()}
 ra.addEventListener("loadedmetadata",function(){toEdge(3)});
+ra.addEventListener("seeked",function(){if(!roomSeek)return;roomSeek=false;if(cur&&!stopping&&ra.paused)ra.play().catch(function(){})});
 setInterval(function(){if(cur&&!ra.paused)toEdge(8)},10000);
-ra.addEventListener("pause",function(){if(cur&&rooms[cur]&&rooms[cur].state===""){stopRoom()}});
+ra.addEventListener("pause",function(){if(stopping||roomSeek)return;if(cur&&rooms[cur]&&rooms[cur].state===""){ra.play().catch(function(){if(cur&&rooms[cur]){rooms[cur].state="قطع شد؛ دوباره بزن";mark()}})}});
+ra.addEventListener("play",function(){if(cur&&rooms[cur]&&rooms[cur].state){rooms[cur].state="";mark()}});
 if(main)main.addEventListener("play",function(){if(cur)stopRoom();showBack=false;drawNow()});
 function add(d){var b=el("button","lrb");b.type="button";b.setAttribute("role","listitem");
  var c=el("span","lrc",initial(d));c.style.background="linear-gradient(145deg,"+color(label(d))+",#1a1040)";c.appendChild(el("span","lri","▶"));
