@@ -173,7 +173,7 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
 <body>
 <div class="w">
 <header class="hero" id="hero">
-  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v9">
+  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v10">
     <div class="lr-h"><i></i> اتاق‌های زنده</div>
     <div class="lr-row" id="lrRow" role="list"></div>
     <div class="lrnow" id="lrNow" hidden aria-live="polite"></div>
@@ -268,7 +268,7 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
 <footer>Radio Clubhouse · radioclubhouse.com</footer>
 </div>
 
-<script src="config.js?v=18"></script>
+<script src="config.js?v=19"></script>
 <script>
 (function(){
 "use strict";
@@ -322,6 +322,7 @@ setInterval(function(){if(playing&&!audio.paused)toEdge(8)},10000);
 $("playBtn").addEventListener("click",function(){if(playing){userStop=true;audio.pause();setOn(false);setSt("متوقف شد");return}userStop=false;tryIdx(0)});
 audio.addEventListener("pause",function(){if(userStop||edgeSeek)return;if(playing){audio.play().catch(function(){setOn(false);setSt("متوقف شد")})}});
 audio.addEventListener("play",function(){if(!userStop)setOn(true)});
+window.rcStopMain=function(){userStop=true;try{audio.pause()}catch(e){}setOn(false);setSt("")};
 
 
 /* live room */
@@ -452,7 +453,7 @@ function playRoom(id){var r=rooms[id];if(!r)return;
  if(!nativeHls&&cur!==id){vizSetup();if(AC&&AC.state==="suspended"){try{AC.resume()}catch(e){}}}
  if(cur===id){stopRoom();return}
  stopRoom();showBack=false;stopping=false;cur=id;roomTries=0;r.state="در حال اتصال…";mark();
- if(main&&!main.paused){try{main.pause()}catch(e){}}
+ if(window.rcStopMain)window.rcStopMain();else if(main&&!main.paused){try{main.pause()}catch(e){}}
  var url=BASE+r.d.url;
  function fail(){if(cur!==id)return;stopRoom("پخش این اتاق الان در دسترس نیست");}
  function ok(){if(cur!==id)return;r.state="";mark();if(hls)vizOn(r.btn)}
