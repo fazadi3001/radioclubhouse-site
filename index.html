@@ -118,7 +118,10 @@ form.send button:disabled{opacity:.45;cursor:not-allowed}
 .links{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .links a{padding:10px 12px;border-radius:12px;background:var(--card2);color:var(--text);text-decoration:none;font-size:.88rem}
 .links a span{display:block}
-footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
+footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px;line-height:1.6}
+footer .legal{margin-top:4px;direction:ltr}
+footer .legal a{color:inherit;text-decoration:underline;text-underline-offset:2px;padding:4px 2px}
+footer .legal a:hover,footer .legal a:focus-visible{color:var(--text)}
 [hidden]{display:none!important}
 .modstar{position:absolute;bottom:-3px;left:-3px;width:20px;height:20px;border-radius:50%;background:#16a34a;color:#fff;font-size:13px;line-height:20px;text-align:center;border:2px solid #0f0a1f;font-family:Arial,sans-serif}
 .av{position:relative}
@@ -265,7 +268,11 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
     <p class="note" style="margin-top:10px" id="tgWrap">اگر سایت بسته شد، لینک تازه را از تلگرام بگیر: <span id="tgLabel">به‌زودی</span></p>
   </section>
 </div>
-<footer>Radio Clubhouse · radioclubhouse.com</footer>
+<footer>Radio Clubhouse · radioclubhouse.com
+  <nav class="legal" aria-label="Legal">
+    <a href="/privacy">Privacy Policy</a><span aria-hidden="true"> · </span><a href="/terms">Terms of Service</a>
+  </nav>
+</footer>
 </div>
 
 <script src="config.js?v=21"></script>
