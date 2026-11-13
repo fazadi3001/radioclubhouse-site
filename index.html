@@ -147,6 +147,9 @@ footer .legal a:hover,footer .legal a:focus-visible{color:var(--text)}
 @keyframes lrOut{0%{transform:scale(1);opacity:1}30%{transform:scale(1.08)}100%{transform:scale(0);opacity:0}}
 .lrc{position:relative;width:56px;height:56px;margin:0 auto 4px;border-radius:50%;display:flex;align-items:center;justify-content:center;
  font-weight:800;font-size:1.25rem;color:#fff;box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--red)}
+/* one isolated letter: its own run so Arabic does not join, and no faux-bold double stroke */
+.lrl{display:block;line-height:1;unicode-bidi:isolate;font-weight:700;font-synthesis:none;pointer-events:none}
+.lrl.ar{font-family:"Noto Naskh Arabic","Noto Sans Arabic",Tahoma,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .lrc::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--red);animation:lrp 1.8s ease-out infinite;pointer-events:none}
 @keyframes lrp{0%{transform:scale(1);opacity:.75}100%{transform:scale(1.28);opacity:0}}
 .lrc .lri{position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);font-size:1rem;opacity:0;transition:opacity .2s}
@@ -182,7 +185,7 @@ footer .legal a:hover,footer .legal a:focus-visible{color:var(--text)}
 <body>
 <div class="w">
 <header class="hero" id="hero">
-  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v13">
+  <div class="lr" id="liveRooms" hidden aria-label="اتاق‌های زنده" data-rc-build="rc-rooms-v14">
     <div class="lr-h"><i></i> اتاق‌های زنده</div>
     <div class="lr-row" id="lrRow" role="list"></div>
     <div class="lrnow" id="lrNow" hidden aria-live="polite"></div>
@@ -436,8 +439,51 @@ var COLORS=["#8b5cf6","#ec4899","#06b6d4","#f59e0b","#10b981","#ef4444","#6366f1
 function color(n){var h=0;for(var i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))>>>0;return COLORS[h%COLORS.length]}
 var rooms={},cur=null,hoverId=null,hls=null,showBack=false,MAX_ROOMS=6;
 function isMine(r){return /نبرد\s*اندیشه/.test((r.title||"")+" "+(r.club||""))}
-function label(r){return r.club||r.title||"اتاق زنده"}
-function initial(r){var a=Array.from(label(r)),i;for(i=0;i<a.length;i++)if(/[^\s\-_.,:;!?()\[\]«»"'\/|#@*~+=<>{}…،؛؟]/.test(a[i])&&a[i].length===1)return a[i];return "🎙"}
+function stripBidi(s){return String(s||"").replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069\uFEFF\u200B]/g,"").trim()}
+/* Name under the circle: the club when the feed has one, otherwise the part of "NAME - title" before " - ". */
+function label(r){
+ var club=stripBidi(r&&r.club);
+ if(club)return club;
+ var title=stripBidi(r&&r.title);
+ if(!title)return "اتاق زنده";
+ var parts=title.split(/\s+[\u002D\u2010-\u2015\u2212]\s+/);
+ if(parts.length>1&&stripBidi(parts[0]))return stripBidi(parts[0]);
+ return title}
+function graphemes(s){
+ s=String(s||"");
+ try{if(typeof Intl!=="undefined"&&Intl.Segmenter)return Array.from(new Intl.Segmenter(undefined,{granularity:"grapheme"}).segment(s),function(x){return x.segment})}catch(e){}
+ var out=[],i=0;
+ while(i<s.length){
+  var cp=s.codePointAt(i),ch=String.fromCodePoint(cp);
+  i+=cp>65535?2:1;
+  while(i<s.length){
+   var n=s.codePointAt(i),mark=false;
+   try{mark=/\p{M}/u.test(String.fromCodePoint(n))}catch(e2){mark=(n>=0x300&&n<=0x36F)||(n>=0x64B&&n<=0x65F)}
+   if(!mark)break;
+   ch+=String.fromCodePoint(n);i+=n>65535?2:1}
+  out.push(ch)}
+ return out}
+/* Skip emoji, bidi/format marks, whitespace and punctuation. Keep the first letter grapheme (with its marks). */
+function skipGrapheme(g){
+ var i=0,s=String(g||""),keep=false;
+ if(!s)return true;
+ while(i<s.length){
+  var cp=s.codePointAt(i);i+=cp>65535?2:1;
+  var ch=String.fromCodePoint(cp),emoji=false,letter=false,ignorable=false;
+  try{
+   emoji=/\p{Extended_Pictographic}/u.test(ch);
+   letter=/\p{L}|\p{N}/u.test(ch);
+   ignorable=/\p{M}|\p{C}|\p{P}|\p{Z}/u.test(ch)}
+  catch(e){
+   emoji=cp>=0x1F000||(cp>=0x2600&&cp<=0x27BF);
+   letter=/[0-9A-Za-z\u00C0-\u024F\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(ch);
+   ignorable=(cp<=0x20)||(cp>=0x200B&&cp<=0x200F)||(cp>=0x202A&&cp<=0x202E)||(cp>=0x2060&&cp<=0x2069)||(cp>=0xFE00&&cp<=0xFE0F)||/[\-_.,:;!?()\[\]«»"'\/|#@*~+=<>{}…،؛؟]/.test(ch)}
+  if(emoji)return true;
+  if(letter)keep=true;
+  else if(!ignorable)keep=true}
+ return !keep}
+function initial(r){var g=graphemes(label(r)),i;for(i=0;i<g.length;i++)if(!skipGrapheme(g[i]))return g[i];return "🎙"}
+function paintGlyph(node,ch){if(!node)return;node.textContent=ch;node.classList.toggle("ar",/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(ch))}
 function drawNow(){now.textContent="";
  var preview=hoverId&&rooms[hoverId]&&hoverId!==cur?rooms[hoverId]:null;
  var r=preview||(cur&&rooms[cur]);
@@ -493,7 +539,8 @@ ra.addEventListener("pause",function(){if(stopping||roomSeek)return;if(cur&&room
 ra.addEventListener("play",function(){if(cur&&rooms[cur]&&rooms[cur].state){rooms[cur].state="";mark()}});
 if(main)main.addEventListener("play",function(){if(cur)stopRoom();showBack=false;drawNow()});
 function add(d){var b=el("button","lrb");b.type="button";b.setAttribute("role","listitem");
- var c=el("span","lrc",initial(d));c.style.background="linear-gradient(145deg,"+color(label(d))+",#1a1040)";c.appendChild(el("span","lri","▶"));
+ var c=el("span","lrc");c.style.background="linear-gradient(145deg,"+color(d.club||d.title||"اتاق زنده")+",#1a1040)";
+ var g=el("span","lrl");paintGlyph(g,initial(d));c.appendChild(g);c.appendChild(el("span","lri","▶"));
  b.appendChild(c);b.appendChild(el("span","lrn",label(d)));b.title=(d.club?d.club+" — ":"")+d.title;
  b.addEventListener("click",function(){playRoom(d.id)});
  b.addEventListener("mouseenter",function(){previewRoom(d.id)});
@@ -501,7 +548,7 @@ function add(d){var b=el("button","lrb");b.type="button";b.setAttribute("role","
  b.addEventListener("focus",function(){previewRoom(d.id)});
  b.addEventListener("blur",function(){clearPreview(d.id)});
  row.appendChild(b);rooms[d.id]={d:d,btn:b,state:""};}
-function upd(r,d){r.d=d;var b=r.btn;b.querySelector(".lrn").textContent=label(d);var old=b.querySelector(".lrt");if(old&&old.parentNode)old.parentNode.removeChild(old);b.title=(d.club?d.club+" — ":"")+d.title}
+function upd(r,d){r.d=d;var b=r.btn;b.querySelector(".lrn").textContent=label(d);paintGlyph(b.querySelector(".lrl"),initial(d));var old=b.querySelector(".lrt");if(old&&old.parentNode)old.parentNode.removeChild(old);b.title=(d.club?d.club+" — ":"")+d.title}
 function remove(id){var r=rooms[id];delete rooms[id];if(hoverId===id)hoverId=null;if(cur===id){cur=id;stopRoom("این اتاق تمام شد")}
  var b=r.btn,done=false;function gone(){if(done)return;done=true;if(b.parentNode)b.parentNode.removeChild(b);vis()}
  b.classList.add("out");b.addEventListener("animationend",gone);setTimeout(gone,600)}
