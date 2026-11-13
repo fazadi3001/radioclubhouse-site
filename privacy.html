@@ -39,7 +39,10 @@ p:last-child,ul:last-child{margin-bottom:0}
 ul{margin:0 0 10px;padding:0 1.2em}
 .muted,.updated{color:var(--muted);font-size:.86rem}
 .fa{direction:rtl;text-align:right}
-footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
+footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px;line-height:1.6}
+footer .legal{margin-top:4px;direction:ltr}
+footer .legal a{color:inherit;text-decoration:underline;text-underline-offset:2px;padding:4px 2px}
+footer .legal a:hover,footer .legal a:focus-visible{color:var(--text)}
 
 </style>
 </head>
@@ -85,6 +88,10 @@ footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px}
   </section>
   <p class="updated">Last updated: 12 November 2026</p>
 </div>
-<footer>Radio Clubhouse · radioclubhouse.com</footer>
+<footer>Radio Clubhouse · radioclubhouse.com
+  <nav class="legal" aria-label="Legal">
+    <a href="/privacy" aria-current="page">Privacy Policy</a><span aria-hidden="true"> · </span><a href="/terms">Terms of Service</a>
+  </nav>
+</footer>
 </body>
 </html>
