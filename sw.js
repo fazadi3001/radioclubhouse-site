@@ -3,7 +3,7 @@
  * HLS segments, the live stage/chat API, or the anonymous /rooms/hb ping — those go straight to the network
  * so playback and low-latency stay untouched.
  */
-var CACHE = "rc-shell-v11";
+var CACHE = "rc-shell-v12";
 var PRECACHE = [
   "/",
   "/index.html",
