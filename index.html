@@ -118,6 +118,34 @@ form.send button:disabled{opacity:.45;cursor:not-allowed}
 .links{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .links a{padding:10px 12px;border-radius:12px;background:var(--card2);color:var(--text);text-decoration:none;font-size:.88rem}
 .links a span{display:block}
+/* youtube */
+.yt-sub{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 12px;padding:12px 16px;border-radius:14px;text-decoration:none;color:#fff;font-weight:800;font-size:1rem;background:linear-gradient(135deg,#ff3b3b,#b00000);box-shadow:0 8px 22px rgba(176,0,0,.32)}
+.yt-sub:hover{filter:brightness(1.06)}
+.yt-list{display:flex;flex-direction:column;gap:8px}
+.yt-row{display:grid;grid-template-columns:120px minmax(0,1fr);column-gap:10px;row-gap:2px;align-items:start;padding:8px;border-radius:14px;background:var(--card2);border:1px solid transparent}
+.yt-row.live{background:rgba(248,113,113,.14);border-color:rgba(248,113,113,.5)}
+.yt-main{grid-column:1/-1;display:flex;gap:10px;min-width:0;align-items:flex-start;text-decoration:none;color:inherit}
+.yt-thumb{width:120px;height:68px;flex:0 0 120px;object-fit:cover;border-radius:8px;background:#0f0c20}
+.yt-ph{display:block}
+.yt-meta{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
+.yt-badge{display:inline-flex;align-self:flex-start;align-items:center;margin:0 0 2px;padding:1px 8px;border-radius:999px;background:rgba(248,113,113,.22);color:#fecaca;font-size:.72rem;font-weight:800}
+.yt-title{font-weight:700;font-size:.92rem;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.yt-date,.yt-jalali{display:block;color:var(--muted);font-size:.75rem;line-height:1.35}
+.yt-date{direction:ltr;unicode-bidi:isolate;text-align:right}
+.yt-pl{grid-column:2;justify-self:start;font-size:.75rem;line-height:1.3}
+.yt-search{width:100%;margin:8px 0 10px;background:#0f0c20;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:10px 12px;font:inherit;font-size:1rem}
+.yt-search::placeholder{color:var(--muted)}
+.yt-pills{display:flex;flex-wrap:wrap;gap:8px}
+.yt-pill{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:8px 12px;border-radius:999px;background:var(--card2);border:1px solid var(--line);color:var(--text);text-decoration:none;font-size:.85rem;line-height:1.35}
+.yt-pill.pin{background:linear-gradient(135deg,#a855f7,#6366f1);border-color:transparent;color:#fff;font-weight:700}
+.yt-on{font-size:.8rem;line-height:1}
+.yt-more{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:8px 14px;font:inherit;font-weight:700;color:var(--text);background:var(--card2);cursor:pointer}
+.yt-count{margin:0}
+.yt-note{margin-top:8px}
+.yt-sub:focus-visible,.yt-pill:focus-visible,.yt-main:focus-visible,.yt-pl:focus-visible,.yt-more:focus-visible,.yt-search:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+@media (max-width:600px){
+  #ytPills.is-collapsed .yt-pill:nth-child(n+9){display:none}
+}
 footer{text-align:center;color:var(--muted);font-size:.72rem;margin-top:18px;line-height:1.6}
 footer .legal{margin-top:4px;direction:ltr}
 footer .legal a{color:inherit;text-decoration:underline;text-underline-offset:2px;padding:4px 2px}
@@ -259,6 +287,28 @@ footer .legal a:hover,footer .legal a:focus-visible{color:var(--text)}
     <div class="upd" id="upd"></div>
   </section>
 
+  <section class="card full" id="ytLives" aria-label="لایوهای اخیر یوتیوب">
+    <h2>📺 لایوهای اخیر یوتیوب</h2>
+    <a class="yt-sub" id="ytSub" target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/@radioclub301?sub_confirmation=1">عضویت در کانال یوتیوب</a>
+    <div class="yt-list" id="ytLiveList"></div>
+    <p class="empty" id="ytLiveEmpty" hidden>فعلاً لایوی ثبت نشده.</p>
+    <p class="note vpn yt-note">لینک‌ها به یوتیوب می‌روند؛ داخل ایران VPN لازم است.</p>
+  </section>
+
+  <section class="card full" id="ytFolders" aria-label="فولدر اتاق‌ها در یوتیوب">
+    <h2>📁 فولدر اتاق‌ها در یوتیوب</h2>
+    <p class="note yt-count" id="ytCount"></p>
+    <input id="ytSearch" class="yt-search" type="search" autocomplete="off" placeholder="جستجوی نام اتاق" aria-label="جستجوی نام اتاق">
+    <div class="yt-pills is-collapsed" id="ytPills"></div>
+    <p class="empty" id="ytNone" hidden>اتاقی با این نام پیدا نشد.</p>
+    <button type="button" class="yt-more" id="ytMore" hidden>نمایش بیشتر</button>
+  </section>
+
+  <section class="card full" id="ytTop" hidden aria-label="پربازدیدترین ویدئوهای هفته">
+    <h2>🔥 پربازدیدترین ویدئوهای هفته</h2>
+    <div class="yt-list" id="ytTopList"></div>
+  </section>
+
   <section class="card" id="archive">
     <h2>📼 اتاق‌های قبلی نبرد اندیشه ها</h2>
     <p class="note vpn" style="margin-bottom:8px">لینک‌ها به یوتیوب می‌روند؛ داخل ایران VPN لازم است.</p>
@@ -284,7 +334,7 @@ footer .legal a:hover,footer .legal a:focus-visible{color:var(--text)}
 </footer>
 </div>
 
-<script src="config.js?v=21"></script>
+<script src="config.js?v=22"></script>
 <script>
 (function(){
 "use strict";
@@ -654,6 +704,372 @@ setInterval(send,30000);
 document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")send()});
 window.addEventListener("pagehide",send);
 }catch(e){}
+})();
+</script>
+<script>
+/* YouTube lives, room playlists, and optional weekly top videos.
+   Data: YOUTUBE_JSON_URL, then local youtube.json. No YouTube API from the browser. */
+(function(){
+"use strict";
+var cfg=window.RC_CONFIG||{};
+var livesEl=document.getElementById("ytLives");
+var listEl=document.getElementById("ytLiveList");
+var emptyEl=document.getElementById("ytLiveEmpty");
+var subEl=document.getElementById("ytSub");
+var countEl=document.getElementById("ytCount");
+var searchEl=document.getElementById("ytSearch");
+var pillsEl=document.getElementById("ytPills");
+var noneEl=document.getElementById("ytNone");
+var moreEl=document.getElementById("ytMore");
+var topEl=document.getElementById("ytTop");
+var topListEl=document.getElementById("ytTopList");
+if(!livesEl||!listEl||!pillsEl||!searchEl||!moreEl)return;
+
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=String(txt);return e}
+function clean(s,n){return String(s==null?"":s).replace(/[\u0000-\u001f\u007f]/g," ").replace(/\s+/g," ").trim().slice(0,n||180)}
+function hostIs(h,root){return h===root||(h.length>root.length+1&&h.slice(-(root.length+1))==="."+root)}
+function ytUrl(u){
+  try{
+    var x=new URL(String(u));
+    if(x.protocol!=="https:"||x.username||x.password)return null;
+    var h=x.hostname.toLowerCase().replace(/\.$/,"");
+    if(h==="youtu.be"||h==="www.youtu.be"||h==="youtube.com"||h==="www.youtube.com"||h==="m.youtube.com"||h==="music.youtube.com")return x.href;
+  }catch(e){}
+  return null;
+}
+function thumbUrl(u){
+  try{
+    var x=new URL(String(u));
+    if(x.protocol!=="https:"||x.username||x.password)return null;
+    var h=x.hostname.toLowerCase().replace(/\.$/,"");
+    if(hostIs(h,"ytimg.com")||h==="img.youtube.com")return x.href;
+  }catch(e){}
+  return null;
+}
+function videoUrl(item){
+  if(!item||typeof item!=="object")return null;
+  var u=ytUrl(item.url||item.link);
+  if(u)return u;
+  var id=String(item.id||item.video_id||item.videoId||"");
+  if(/^[A-Za-z0-9_-]{11}$/.test(id))return "https://www.youtube.com/watch?v="+id;
+  return null;
+}
+function playlistUrl(item){
+  if(!item||typeof item!=="object")return null;
+  var u=ytUrl(item.url||item.link);
+  if(u)return u;
+  var id=String(item.id||"");
+  if(/^[A-Za-z0-9_-]{12,80}$/.test(id))return "https://www.youtube.com/playlist?list="+id;
+  return null;
+}
+function normName(s){
+  s=String(s||"").toLowerCase();
+  try{s=s.normalize("NFKD")}catch(e){}
+  s=s.replace(/[\u200c\u200d\u200e\u200f\u202a-\u202e\u2060-\u2069\ufeff\u200b\u0640]/g,"");
+  try{s=s.replace(/\p{Extended_Pictographic}/gu," ")}catch(e2){}
+  try{s=s.replace(/\p{M}/gu,"")}catch(e3){}
+  s=s.replace(/[\uFE00-\uFE0F]/g,"");
+  try{s=s.replace(/[^\p{L}\p{N}\s]/gu," ")}catch(e4){s=s.replace(/[^\w\u0600-\u06FF\s]/g," ")}
+  return s.replace(/\s+/g," ").trim();
+}
+function fold(s){
+  return normName(s).replace(/[أإآٱ]/g,"ا").replace(/ة/g,"ه").replace(/[يى]/g,"ی").replace(/ك/g,"ک").replace(/ؤ/g,"و").replace(/ئ/g,"ی").replace(/ء/g,"");
+}
+function roomPrefix(title){
+  var s=String(title||"").trim();
+  var parts=s.split(/\s*(?:\u2014|\u2013|\u2012|\u2015|\|)\s*|\s+-\s+/);
+  return (parts[0]||s).trim();
+}
+function matchScore(liveTitle,folderTitle){
+  var folder=normName(folderTitle);
+  if(!folder)return 0;
+  var prefix=normName(roomPrefix(liveTitle));
+  var whole=normName(liveTitle);
+  if(prefix&&prefix===folder)return 4000+folder.length;
+  if(whole&&whole===folder)return 3500+folder.length;
+  var fs=folder.replace(/ /g,""),ps=prefix.replace(/ /g,""),ws=whole.replace(/ /g,"");
+  if(ps&&ps===fs)return 3000+fs.length;
+  if(ws&&ws===fs)return 2800+fs.length;
+  if(fs.length<3)return 0;
+  if(ps.length>=3){
+    if(ps.indexOf(fs)===0||fs.indexOf(ps)===0)return 2000+Math.min(ps.length,fs.length);
+    if(prefix&&(prefix.indexOf(folder)!==-1||folder.indexOf(prefix)!==-1))return 1500+Math.min(prefix.length,folder.length);
+    if(ps.indexOf(fs)!==-1||fs.indexOf(ps)!==-1)return 1200+Math.min(ps.length,fs.length);
+  }
+  if(ws.length>=3){
+    if(whole&&(whole.indexOf(folder)!==-1||folder.indexOf(whole)!==-1))return 800+Math.min(whole.length,folder.length);
+    if(ws.indexOf(fs)!==-1||fs.indexOf(ws)!==-1)return 600+Math.min(ws.length,fs.length);
+  }
+  return 0;
+}
+function bestFolder(title,folders){
+  var best=null,score=0,i,sc;
+  for(i=0;i<(folders||[]).length;i++){
+    sc=matchScore(title,folders[i]&&folders[i].title);
+    if(sc>score){score=sc;best=folders[i]}
+  }
+  return best;
+}
+function asDate(v){
+  if(v==null||v==="")return null;
+  if(typeof v==="number"&&isFinite(v)){var ms=v<1e12?v*1000:v;var dn=new Date(ms);return isNaN(dn.getTime())?null:dn}
+  var d=new Date(v);
+  return isNaN(d.getTime())?null:d;
+}
+function isLive(item){
+  if(!item||typeof item!=="object")return false;
+  var v=item.live;
+  if(v==null&&item.is_live!=null)v=item.is_live;
+  if(v==null&&item.isLive!=null)v=item.isLive;
+  return v===true||v===1||v==="1"||v==="true";
+}
+function startOf(item){return item.started!=null&&item.started!==""?item.started:(item.start!=null?item.start:null)}
+function endOf(item){return item.ended!=null&&item.ended!==""?item.ended:(item.end!=null?item.end:null)}
+function stamp(item,preferEnd){
+  var v=preferEnd?endOf(item):null;
+  if(v==null||v==="")v=startOf(item);
+  if((v==null||v==="")&&preferEnd)v=endOf(item);
+  var d=asDate(v);
+  return d?d.getTime():0;
+}
+function pickLives(lives){
+  var live=[],ended=[],i,item;
+  for(i=0;i<(lives||[]).length;i++){
+    item=lives[i];
+    if(!item||typeof item!=="object"||!videoUrl(item))continue;
+    (isLive(item)?live:ended).push({item:item,i:i});
+  }
+  live.sort(function(a,b){return stamp(b.item,false)-stamp(a.item,false)||a.i-b.i});
+  ended.sort(function(a,b){return stamp(b.item,true)-stamp(a.item,true)||a.i-b.i});
+  var out=live.map(function(x){return x.item});
+  if(out.length>=5)return out;
+  var need=5-out.length;
+  for(i=0;i<ended.length&&i<need;i++)out.push(ended[i].item);
+  return out;
+}
+function pinned(f){return !!(f&&(f.pinned===true||f.pinned===1||f.pinned==="true"||f.pinned==="1"))}
+function orderedFolders(list){
+  return (list||[]).map(function(f,i){return {f:f,i:i}}).filter(function(x){return x.f&&typeof x.f==="object"&&playlistUrl(x.f)}).sort(function(a,b){
+    var ap=pinned(a.f)?1:0,bp=pinned(b.f)?1:0;
+    if(ap!==bp)return bp-ap;
+    return a.i-b.i;
+  }).map(function(x){return x.f});
+}
+function faNum(n){
+  try{return new Intl.NumberFormat("fa-IR").format(n)}
+  catch(e){return String(n).replace(/\d/g,function(d){return "۰۱۲۳۴۵۶۷۸۹"[d]})}
+}
+function formatLondon(d){
+  try{
+    var date=new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/London",day:"numeric",month:"short",year:"numeric"}).format(d).replace(/[\u202f\u00a0]/g," ");
+    var time=new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/London",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(d).replace(/[\u202f\u00a0]/g,"");
+    return date+", "+time+" London";
+  }catch(e){return ""}
+}
+function formatJalali(d){
+  var opts={timeZone:"Europe/London",day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false};
+  try{
+    var fa=new Intl.DateTimeFormat("fa-IR-u-ca-persian",opts);
+    if(fa.resolvedOptions().calendar==="persian")return fa.format(d);
+  }catch(e){}
+  try{
+    var lat=new Intl.DateTimeFormat("en-GB-u-ca-persian",opts);
+    if(lat.resolvedOptions().calendar==="persian")return lat.format(d).replace(" at ", ", ").replace(" AP","");
+  }catch(e2){}
+  return "";
+}
+function viewsOf(item){
+  if(!item||typeof item!=="object")return null;
+  var keys=["views","view_count","viewCount","view_count_week","weekly_views","week_views"];
+  var i,v;
+  for(i=0;i<keys.length;i++){
+    if(item[keys[i]]==null||item[keys[i]]==="")continue;
+    v=item[keys[i]];
+    if(typeof v==="string")v=v.replace(/[,\s\u066c\u066b]/g,"");
+    v=Number(v);
+    if(isFinite(v)&&v>=0)return v;
+  }
+  return null;
+}
+function findTop(j){
+  if(!j||typeof j!=="object"||Array.isArray(j))return null;
+  var names=["top_week","topWeek","top_weekly","weekly_top","week_top","top_videos_week","weekly_top_videos","most_viewed_week","popular_week"];
+  var i,arr;
+  function ok(a){return Array.isArray(a)&&a.some(function(it){return viewsOf(it)!=null})}
+  for(i=0;i<names.length;i++){arr=j[names[i]];if(ok(arr))return arr}
+  var keys=Object.keys(j);
+  for(i=0;i<keys.length;i++){
+    if(keys[i]==="folders"||keys[i]==="lives"||keys[i]==="items")continue;
+    if(!/top|week|view|popular|trend|hot/i.test(keys[i]))continue;
+    arr=j[keys[i]];
+    if(ok(arr))return arr;
+  }
+  return null;
+}
+function liveMap(lives,folders){
+  var map={},i,f,key;
+  for(i=0;i<(lives||[]).length;i++){
+    if(!isLive(lives[i]))continue;
+    f=bestFolder(lives[i].title,folders);
+    if(!f)continue;
+    key=f.id||f.url;
+    if(key)map[key]=1;
+  }
+  return map;
+}
+function thumbFor(item){
+  var t=thumbUrl(item.thumbnail||item.thumb||item.image);
+  if(t)return t;
+  var id=String(item.id||item.video_id||item.videoId||"");
+  if(/^[A-Za-z0-9_-]{11}$/.test(id))return thumbUrl("https://i.ytimg.com/vi/"+id+"/hqdefault.jpg");
+  return null;
+}
+function addThumb(parent,item){
+  var src=thumbFor(item);
+  if(!src){parent.appendChild(el("span","yt-thumb yt-ph"));return}
+  var img=el("img","yt-thumb");
+  img.src=src;img.width=120;img.height=68;img.alt="";img.loading="lazy";img.decoding="async";
+  parent.appendChild(img);
+}
+function renderLives(lives,folders){
+  var picked=pickLives(lives);
+  listEl.textContent="";
+  picked.forEach(function(item){
+    var href=videoUrl(item);
+    if(!href)return;
+    var live=isLive(item);
+    var row=el("div","yt-row"+(live?" live":""));
+    var main=el("a","yt-main");
+    main.href=href;main.target="_blank";main.rel="noopener noreferrer";
+    addThumb(main,item);
+    var meta=el("span","yt-meta");
+    if(live)meta.appendChild(el("span","yt-badge","🔴 زنده"));
+    meta.appendChild(el("span","yt-title",clean(item.title,180)||"لایو یوتیوب"));
+    var when=asDate(startOf(item))||asDate(endOf(item));
+    if(when){
+      var g=formatLondon(when),j=formatJalali(when);
+      if(g)meta.appendChild(el("span","yt-date",g));
+      if(j)meta.appendChild(el("span","yt-jalali",j));
+    }
+    main.appendChild(meta);
+    row.appendChild(main);
+    var folder=bestFolder(item.title,folders);
+    var pu=folder&&playlistUrl(folder);
+    if(pu){
+      var pl=el("a","yt-pl","پلی‌لیست اتاق");
+      pl.href=pu;pl.target="_blank";pl.rel="noopener noreferrer";
+      pl.setAttribute("aria-label","پلی‌لیست اتاق "+clean(folder.title,80));
+      row.appendChild(pl);
+    }
+    listEl.appendChild(row);
+  });
+  if(emptyEl)emptyEl.hidden=!!listEl.children.length;
+}
+function renderTop(arr){
+  if(!topEl||!topListEl)return;
+  var rows=[];
+  (arr||[]).forEach(function(item,i){
+    var views=viewsOf(item),href=videoUrl(item);
+    if(views==null||!href)return;
+    rows.push({item:item,views:views,href:href,i:i});
+  });
+  if(!rows.length){topEl.hidden=true;topListEl.textContent="";return}
+  rows.sort(function(a,b){return b.views-a.views||a.i-b.i});
+  rows=rows.slice(0,8);
+  topListEl.textContent="";
+  rows.forEach(function(row){
+    var box=el("div","yt-row");
+    var main=el("a","yt-main");
+    main.href=row.href;main.target="_blank";main.rel="noopener noreferrer";
+    addThumb(main,row.item);
+    var meta=el("span","yt-meta");
+    meta.appendChild(el("span","yt-title",clean(row.item.title,180)||"ویدئو"));
+    meta.appendChild(el("span","yt-jalali",faNum(Math.round(row.views))+" بازدید"));
+    main.appendChild(meta);
+    box.appendChild(main);
+    topListEl.appendChild(box);
+  });
+  topEl.hidden=!topListEl.children.length;
+}
+var folderData=[],liveData=[],ytOpen=false,got=false;
+var mq=window.matchMedia("(max-width: 600px)");
+function syncMore(n,q){
+  var can=mq.matches&&!q&&n>8;
+  moreEl.hidden=!can;
+  if(!can)pillsEl.classList.remove("is-collapsed");
+  else pillsEl.classList.toggle("is-collapsed",!ytOpen);
+  moreEl.textContent=ytOpen?"نمایش کمتر":"نمایش بیشتر";
+  moreEl.setAttribute("aria-expanded",ytOpen?"true":"false");
+}
+function renderFolders(){
+  var q=fold(searchEl.value);
+  var list=!q?folderData:folderData.filter(function(f){return fold(f.title).indexOf(q)!==-1});
+  var on=liveMap(liveData,folderData);
+  pillsEl.textContent="";
+  list.forEach(function(f){
+    var href=playlistUrl(f);
+    if(!href)return;
+    var live=!!on[f.id||f.url];
+    var a=el("a","yt-pill"+(pinned(f)?" pin":""));
+    a.href=href;a.target="_blank";a.rel="noopener noreferrer";
+    if(live){
+      a.appendChild(el("span","yt-on","🔴"));
+      a.setAttribute("aria-label","زنده: "+clean(f.title,120));
+    }
+    a.appendChild(el("span",null,clean(f.title,120)||"اتاق"));
+    pillsEl.appendChild(a);
+  });
+  if(countEl)countEl.textContent=faNum(list.length)+" فولدر اتاق";
+  if(noneEl)noneEl.hidden=list.length!==0;
+  syncMore(list.length,q);
+}
+function applySub(j){
+  if(!subEl)return;
+  var u=ytUrl(cfg.YOUTUBE_SUBSCRIBE_URL)||ytUrl(cfg.YOUTUBE_CHANNEL_URL)||ytUrl(j&&j.subscribe)||ytUrl(j&&j.channel);
+  if(u){subEl.href=u;subEl.hidden=false}
+  else{subEl.removeAttribute("href");subEl.hidden=true}
+}
+function render(j){
+  got=true;
+  var folders=orderedFolders(j&&j.folders);
+  var lives=(j&&Array.isArray(j.lives))?j.lives:[];
+  folderData=folders;
+  liveData=lives;
+  applySub(j);
+  renderLives(lives,folders);
+  renderFolders();
+  var top=findTop(j);
+  if(top)renderTop(top);
+  else if(topEl){topEl.hidden=true;if(topListEl)topListEl.textContent=""}
+}
+function failSoft(){
+  if(got)return;
+  if(emptyEl){emptyEl.hidden=false;emptyEl.textContent="فهرست یوتیوب الان در دسترس نیست."}
+  if(countEl&&!countEl.textContent)countEl.textContent=faNum(0)+" فولدر اتاق";
+}
+function fetchJson(url){
+  var c=window.AbortController?new AbortController():null;
+  var t=setTimeout(function(){if(c)c.abort()},12000);
+  return fetch(url,{cache:"no-store",credentials:"omit",signal:c?c.signal:undefined}).then(function(r){
+    clearTimeout(t);if(!r.ok)throw new Error("http");return r.json();
+  },function(e){clearTimeout(t);throw e});
+}
+var inflight=false;
+function refresh(){
+  if(inflight)return;
+  inflight=true;
+  var remote=cfg.YOUTUBE_JSON_URL;
+  var p=remote?fetchJson(remote):Promise.reject(new Error("no-remote"));
+  p.catch(function(){return fetchJson("youtube.json")}).then(render).catch(failSoft).then(function(){inflight=false});
+}
+searchEl.addEventListener("input",renderFolders);
+moreEl.addEventListener("click",function(){ytOpen=!ytOpen;renderFolders()});
+if(mq.addEventListener)mq.addEventListener("change",function(){renderFolders()});
+else if(mq.addListener)mq.addListener(function(){renderFolders()});
+refresh();
+var pollSec=Number(cfg.YOUTUBE_POLL_SEC);
+if(!isFinite(pollSec)||pollSec<=0)pollSec=60;
+setInterval(refresh,pollSec*1000);
 })();
 </script>
 </body>
