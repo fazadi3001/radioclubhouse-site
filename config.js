@@ -24,5 +24,10 @@ window.RC_CONFIG = {
   CHAT_POST_URL: "",
   CHAT_MAX_LEN: 200,
   ARCHIVE_URL: "archive.json",
+  /* YouTube lives + room playlists. Polled from YOUTUBE_JSON_URL; youtube.json is the offline fallback. */
+  YOUTUBE_JSON_URL: "https://clubhouse-mini.tail4a3417.ts.net/youtube.json",
+  YOUTUBE_CHANNEL_URL: "https://www.youtube.com/@radioclub301",
+  YOUTUBE_SUBSCRIBE_URL: "https://www.youtube.com/@radioclub301?sub_confirmation=1",
+  YOUTUBE_POLL_SEC: 60,
   TELEGRAM_URL: ""  /* PLACEHOLDER e.g. https://t.me/yourchannel */
 };
